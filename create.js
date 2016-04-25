@@ -22,6 +22,7 @@ module.exports = function create(Observable) {
 		var endEvent = or(opts.endEvent, 'end');
 
 		function cleanup() {
+			complete = true;
 			dataListeners.forEach(function (listener) {
 				stream.removeListener(dataEvent, listener);
 			});
@@ -51,11 +52,9 @@ module.exports = function create(Observable) {
 				awaited.catch(reject);
 			}
 		}).catch(function (err) {
-			complete = true;
 			cleanup();
 			throw err;
 		}).then(function (result) {
-			complete = true;
 			cleanup();
 			return result;
 		});
