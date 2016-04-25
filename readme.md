@@ -2,7 +2,7 @@
 
 > Convert Node Streams into ECMAScript-Observables
 
-[`Observables`](https://github.com/zenparsing/es-observable) are rapidly gaining popularity. They have much in common with Streams, in that they both represent data that arrives over time. In particular, Observables provide expressive methods for filtering and mutating incoming data.
+[`Observables`](https://github.com/zenparsing/es-observable) are rapidly gaining popularity. They have much in common with Streams, in that they both represent data that arrives over time. Most Observable implementations provide expressive methods for filtering and mutating incoming data. Methods like `.map()`, `.filter()`, and `.forEach` behave very similarly to their Array counterparts, so using Observables can be very intuitive.
 
 [Learn more about Observables](#learn-about-observables)
 
@@ -79,7 +79,7 @@ Default: `"data"`
 
 If you are using an `EventEmitter` or non-standard Stream, you can change which event causes data to be emitted to the Observable.
 
-## Learn about Observables:
+## Learn about Observables
 
  - Overview: https://github.com/zenparsing/es-observable
  - Formal Spec: https://zenparsing.github.io/es-observable/
@@ -87,11 +87,13 @@ If you are using an `EventEmitter` or non-standard Stream, you can change which 
  - [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) - Observables Implementation
  - [`zen-observables`](https://github.com/zenparsing/zen-observable) - Observables Implementation
 
-## Transform Streams:
+## Transform Streams
 
 `data` events on the stream will be emitted as events in the Observable. Since most native streams emit `chunks` of binary data, you will likely want to use a `TransformStream` to convert those chunks of binary data into an object stream. [`split`](https://github.com/dominictarr/split) is just one popular TransformStream that splits streams into individual lines of text.
 
-Note that using this module disables back-pressure controls on the stream. As such it should not be used where back-pressure throttling is required (i.e. high volume web servers).
+## Caveats
+
+It is important Note that using this module disables back-pressure controls on the stream. As such it should not be used where back-pressure throttling is required (i.e. high volume web servers). It still has value for larger projects, as it can make unit testing streams much cleaner.
 
 ## License
 
