@@ -2,7 +2,9 @@
 
 > Convert Node Streams into ECMAScript-Observables
 
-[`Observables`](https://github.com/zenparsing/es-observable) are rapidly gaining popularity. They have much in common with Streams, in that they both represent data that arrives over time. In particular, they provide expressive methods for filtering and mutating the incoming data.
+[`Observables`](https://github.com/zenparsing/es-observable) are rapidly gaining popularity. They have much in common with Streams, in that they both represent data that arrives over time. In particular, Observables provide expressive methods for filtering and mutating incoming data.
+
+[Learn more about Observables](#learn-about-observables)
 
 ## Install
 
@@ -39,7 +41,8 @@ streamToObservable(readStream)
 
 Type: [`ReadableStream`](https://nodejs.org/api/stream.html#stream_class_stream_readable)
 
-*Note:* `stream` can technically be any [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) instance. By default the `stream-to-observable` listens to the standard Stream events (`data`, `error`, and `end`), but those are configurable via the `options` parameter. If you're using this with an actual stream, you likely won't need to pass the options object at all.
+*Note:*
+`stream` can technically be any [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) instance. By default the `stream-to-observable` listens to the standard Stream events (`data`, `error`, and `end`), but those are configurable via the `options` parameter. If you are using this with a standard Stream, you likely won't need the `options` parameter.
 
 #### options
 
@@ -47,25 +50,25 @@ Type: [`ReadableStream`](https://nodejs.org/api/stream.html#stream_class_stream_
 
 Type: `Promies`<br>
 
-If provided, the Observable will not "complete" until `await` is resolved. If `await` is rejected, the Observable will immediately emit an `error` event and disconnect from the stream. This is mostly useful when attaching to the `stdin` or `stdout` streams of a  [`child_process`](https://nodejs.org/api/child_process.html#child_process_child_stdio). In that case, those streams will usually not emit `error` events, even if the process exits with an error code. This provides a convenient means to reject the Observable if the child process fails.
+If provided, the Observable will not "complete" until `await` is resolved. If `await` is rejected, the Observable will immediately emit an `error` event and disconnect from the stream. This is mostly useful when attaching to the `stdin` or `stdout` streams of a  [`child_process`](https://nodejs.org/api/child_process.html#child_process_child_stdio). Those streams usually do not emit `error` events, even if the underlying process exits with an error. This provides a means to reject the Observable if the child process exits with an unexpected error code.
 
 ##### endEvent
 
 Type: `String` or `false` <br>
 Default: `"end"`
 
-If you are using an `EventEmitter` or non-standard Stream, and it emits something other than `end` events, you can manipulate which event causes the Observable to be completed.
+If you are using an `EventEmitter` or non-standard Stream, you can change which event signals that the Observable should be completed.
 
 Setting this to `false` will avoid listening for any end events.
 
-Setting this to `false` and providing an `await` Promise will cause the Observable to resolve immediately with the `await` Promise (it will not listen to any further `data` events once the Promise is resolved).
+Setting this to `false` and providing an `await` Promise will cause the Observable to resolve immediately with the `await` Promise (the Observable will remove all it's `data` event listeners from the stream once the Promise is resolved).
 
 ##### errorEvent
 
 Type: `String` or `false` <br>
 Default: `"error"`
 
-If you are using an `EventEmitter` or non-standard Stream, and it emits something other than `error` events, you can manipulate which event causes the Observable to be closed with an error.
+If you are using an `EventEmitter` or non-standard Stream, you can change which event signals that the Observable should be closed with an error.
 
 Setting this to `false` will avoid listening for any error events.
 
@@ -74,14 +77,15 @@ Setting this to `false` will avoid listening for any error events.
 Type: `String`<br>
 Default: `"data"`
 
-If you are using an `EventEmitter` or non-standard Stream, and it emits something other than `data` events, you can manipulate which event to listen to.
+If you are using an `EventEmitter` or non-standard Stream, you can change which event causes data to be emitted to the Observable.
 
 ## Learn about Observables:
 
  - Overview: https://github.com/zenparsing/es-observable
  - Formal Spec: https://zenparsing.github.io/es-observable/
- - [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) (Implementation)
- - [`zen-observables`](https://github.com/zenparsing/zen-observable) (Implementation)
+ - [egghead.io lesson](https://egghead.io/lessons/javascript-introducing-the-observable) - Video
+ - [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) - Observables Implementation
+ - [`zen-observables`](https://github.com/zenparsing/zen-observable) - Observables Implementation
 
 ## Transform Streams:
 
