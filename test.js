@@ -86,12 +86,14 @@ function testWithImplementation(prefix, Observable) {
 			],
 			() => {
 				awaited.resolve('resolution');
+				setImmediate(() => ee.emit('data', 'c'));
 			}
 		);
 
 		var result =
 			await m(ee, {endEvent: false, await: awaited})
 				.forEach(chunk => t.is(chunk, expected.next().value));
+		await delay(10);
 		t.is(result, isZen ? 'resolution' : undefined);
 	});
 
