@@ -1,7 +1,7 @@
 {
   "name": "stream-to-observable",
   "version": "0.0.1",
-  "description": "My world-class module",
+  "description": "Convert Node Streams into ECMAScript-Observables",
   "license": "MIT",
   "repository": "jamestalmage/stream-to-observable",
   "author": {
@@ -17,8 +17,9 @@
   },
   "files": [
     "index.js",
-    "create.js",
-    "observable.js"
+    "zen.js",
+    "rxjs.js",
+    "rxjs-all.js"
   ],
   "keywords": [
     "stream",
