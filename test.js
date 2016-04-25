@@ -148,6 +148,49 @@ function testWithImplementation(prefix, Observable) {
 			'baz'
 		);
 	});
+
+	test(`${prefix}: endEvent:false, and await:undefined means the Observable will never be resolved`, t => {
+		const ee = new EventEmitter();
+
+		emitSequence(ee, [
+			['data', 'foo'],
+			['data', 'bar'],
+			['end'],
+			['false']
+		]);
+
+		let completed = false;
+
+		m(ee, {endEvent: false})
+			.forEach(() => {})
+			.then(() => {
+				completed = true;
+			});
+
+		return delay(30).then(() => t.false(completed));
+	});
+
+	test(`${prefix}: errorEvent can be disabled`, () => {
+		const ee = new EventEmitter();
+
+		emitSequence(ee, [
+			['data', 'foo'],
+			['data', 'bar'],
+			['error', new Error('error')],
+			['false', new Error('bar')],
+			['end']
+		]);
+
+		ee.on('error', () => {});
+
+		return m(ee, {errorEvent: false});
+	});
+
+	test(`${prefix}: protects against improper arguments`, t => {
+		t.throws(() => m(new EventEmitter(), {errorEvent: 3}), /errorEvent/);
+		t.throws(() => m(new EventEmitter(), {endEvent: 3}), /endEvent/);
+		t.throws(() => m(new EventEmitter(), {dataEvent: false}), /dataEvent/);
+	});
 }
 
 testWithImplementation('zen-observable', ZenObservable);
