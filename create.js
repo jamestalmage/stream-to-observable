@@ -14,10 +14,19 @@ module.exports = function create(Observable) {
 	return function (stream, opts) {
 		opts = opts || {};
 
+		var complete = false;
+		var dataListeners = [];
 		var awaited = opts.await;
 		var dataEvent = or(opts.dataEvent, 'data', true);
 		var errorEvent = or(opts.errorEvent, 'error');
 		var endEvent = or(opts.endEvent, 'end');
+
+		function cleanup() {
+			dataListeners.forEach(function (listener) {
+				stream.removeListener(dataEvent, listener);
+			});
+			dataListeners = null;
+		}
 
 		var completion = new Promise(function (resolve, reject) {
 			function onEnd(result) {
@@ -41,12 +50,24 @@ module.exports = function create(Observable) {
 			if (awaited) {
 				awaited.catch(reject);
 			}
+		}).catch(function (err) {
+			complete = true;
+			cleanup();
+			throw err;
+		}).then(function (result) {
+			complete = true;
+			cleanup();
+			return result;
 		});
 
 		return new Observable(function (observer) {
-			stream.on(dataEvent, function (data) {
-				observer.next(data);
-			});
+			if (!complete) {
+				var onData = function onData(data) {
+					observer.next(data);
+				};
+				stream.on(dataEvent, onData);
+				dataListeners.push(onData);
+			}
 
 			completion
 				.catch(function (err) {

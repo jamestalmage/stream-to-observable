@@ -28,6 +28,14 @@ function emitSequence(emitter, sequence) {
 	setImmediate(emit);
 }
 
+// avoid deprecation warnings
+function listenerCount(emitter, eventName) {
+	if (emitter.listenerCount) {
+		return emitter.listenerCount(eventName);
+	}
+	return EventEmitter.listenerCount(emitter, eventName);
+}
+
 function deferred() {
 	let res;
 	let rej;
@@ -190,6 +198,42 @@ function testWithImplementation(prefix, Observable) {
 		t.throws(() => m(new EventEmitter(), {errorEvent: 3}), /errorEvent/);
 		t.throws(() => m(new EventEmitter(), {endEvent: 3}), /endEvent/);
 		t.throws(() => m(new EventEmitter(), {dataEvent: false}), /dataEvent/);
+	});
+
+	test(`${prefix}: listeners are cleaned up on completion, and no further listeners will be added.`, t => {
+		t.plan(5);
+
+		const ee = new EventEmitter();
+		t.is(listenerCount(ee, 'data'), 0);
+
+		const observable = m(ee);
+
+		observable.forEach(() => {});
+		t.is(listenerCount(ee, 'data'), 1);
+
+		observable.forEach(() => {});
+		t.is(listenerCount(ee, 'data'), 2);
+
+		emitSequence(ee, [
+			['data', 'foo'],
+			['data', 'bar'],
+			['end']
+		]);
+
+		return observable
+			.forEach(() => {})
+			.then(() => {
+				t.is(listenerCount(ee, 'data'), 0);
+
+				ee.on = ee.once = function () {
+					t.fail('should not have added more listeners');
+				};
+
+				observable.forEach(() => {});
+				t.is(listenerCount(ee, 'data'), 0);
+
+				return observable.forEach(() => {});
+			});
 	});
 }
 
