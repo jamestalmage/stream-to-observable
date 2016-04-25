@@ -10,6 +10,11 @@
 
 ```
 $ npm install --save stream-to-observable
+
+# You also need to install an Observable implementation (pick one):
+
+$ npm install --save zen-observable rxjs
+
 ```
 
 
@@ -18,7 +23,10 @@ $ npm install --save stream-to-observable
 ```js
 const fs = require('fs');
 const split = require('split');
-const streamToObservable = require('stream-to-observable');
+
+// You provide the Observable implmentation
+const Observable = require('zen-observable')
+const streamToObservable = require('stream-to-observable')(Observable);
 
 const readStream = fs
   .createReadStream('./hello-world.txt', {encoding: 'utf8'})
@@ -31,6 +39,20 @@ streamToObservable(readStream)
     console.log(chunk); // only the lines containing "hello" - and they will be capitalized
   });
 ```
+
+There are convenience imports for [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) and [`zen-observables`](https://github.com/zenparsing/zen-observable):
+
+```js
+const streamToObservable = require('stream-to-observable/zen'); // zen-observables
+// or
+const streamToObservable = require('stream-to-observable/rxjs-all'); // full rxjs implementation
+// or
+const streamToObservable = require('stream-to-observable/rxjs'); // minimal rxjs implementation
+// you can patch the minimal rxjs.
+require('rxjs/add/operator/map');
+```
+
+None of the above implementations are included as dependencies of this package, so you still need to install them yourself using `npm install`. If using the minimal `rxjs` import, be sure to see [the documentation](http://reactivex.io/rxjs/manual/installation.html) regarding patching it with additional convenience methods.
 
 
 ## API

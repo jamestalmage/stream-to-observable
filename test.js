@@ -4,7 +4,7 @@ import {Observable as RxObservable} from 'rxjs/Rx';
 import test from 'ava';
 import delay from 'delay';
 import arrayToEvents from 'array-to-events';
-import create from './create';
+import create from './';
 
 function emitSequence(emitter, sequence, cb) {
 	arrayToEvents(emitter, sequence, {delay: 'immediate', done: cb});
