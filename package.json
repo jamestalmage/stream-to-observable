@@ -1,6 +1,6 @@
 {
   "name": "stream-to-observable",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Convert Node Streams into ECMAScript-Observables",
   "license": "MIT",
   "repository": "jamestalmage/stream-to-observable",
