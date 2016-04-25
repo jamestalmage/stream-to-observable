@@ -3,32 +3,15 @@ import ZenObservable from 'zen-observable';
 import {Observable as RxObservable} from 'rxjs/Rx';
 import test from 'ava';
 import delay from 'delay';
+import arrayToEvents from 'array-to-events';
 import create from './create';
 
-function emitSequence(emitter, sequence) {
-	var i = 0;
-
-	function emit() {
-		if (i < sequence.length) {
-			var event = sequence[i];
-
-			if (Array.isArray(event)) {
-				emitter.emit(...event);
-			} else if (typeof event === 'function') {
-				event(emitter, i);
-			} else {
-				throw new Error('event is not an Array or Function:' + event);
-			}
-
-			i++;
-			setImmediate(emit);
-		}
-	}
-
-	setImmediate(emit);
+function emitSequence(emitter, sequence, cb) {
+	arrayToEvents(emitter, sequence, {delay: 'immediate', done: cb});
 }
 
 // avoid deprecation warnings
+// TODO: https://github.com/jden/node-listenercount/pull/1
 function listenerCount(emitter, eventName) {
 	if (emitter.listenerCount) {
 		return emitter.listenerCount(eventName);
@@ -96,12 +79,15 @@ function testWithImplementation(prefix, Observable) {
 		var awaited = deferred();
 		var expected = expectations('a', 'b');
 
-		emitSequence(ee, [
-			['data', 'a'],
-			['data', 'b'],
-			() => awaited.resolve('resolution'),
-			['data', 'c']
-		]);
+		emitSequence(ee,
+			[
+				['data', 'a'],
+				['data', 'b']
+			],
+			() => {
+				awaited.resolve('resolution');
+			}
+		);
 
 		var result =
 			await m(ee, {endEvent: false, await: awaited})
