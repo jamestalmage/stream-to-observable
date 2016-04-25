@@ -1,4 +1,4 @@
-# stream-to-observable [![Build Status](https://travis-ci.org/jamestalmage/stream-to-observable.svg?branch=master)](https://travis-ci.org/jamestalmage/stream-to-observable)
+# stream-to-observable [![Build Status](https://travis-ci.org/jamestalmage/stream-to-observable.svg?branch=master)](https://travis-ci.org/jamestalmage/stream-to-observable) [![Coverage Status](https://coveralls.io/repos/github/jamestalmage/stream-to-observable/badge.svg?branch=master)](https://coveralls.io/github/jamestalmage/stream-to-observable?branch=master)
 
 > My world-class module
 
