@@ -14,9 +14,7 @@ $ npm install --save stream-to-observable
 # You also need to install an Observable implementation (pick one):
 
 $ npm install --save zen-observable rxjs
-
 ```
-
 
 ## Usage
 
@@ -52,8 +50,7 @@ const streamToObservable = require('stream-to-observable/rxjs'); // minimal rxjs
 require('rxjs/add/operator/map');
 ```
 
-None of the above implementations are included as dependencies of this package, so you still need to install them yourself using `npm install`. If using the minimal `rxjs` import, be sure to see [the documentation](http://reactivex.io/rxjs/manual/installation.html) regarding patching it with additional convenience methods.
-
+None of the above implementations are included as dependencies of this package, so you still need to install them yourself using `npm install`. If you're using the minimal `rxjs` import, be sure to see [the documentation](http://reactivex.io/rxjs/manual/installation.html) regarding patching it with additional convenience methods.
 
 ## API
 
@@ -64,13 +61,13 @@ None of the above implementations are included as dependencies of this package, 
 Type: [`ReadableStream`](https://nodejs.org/api/stream.html#stream_class_stream_readable)
 
 *Note:*
-`stream` can technically be any [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) instance. By default the `stream-to-observable` listens to the standard Stream events (`data`, `error`, and `end`), but those are configurable via the `options` parameter. If you are using this with a standard Stream, you likely won't need the `options` parameter.
+`stream` can technically be any [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) instance. By default, this module listens to the standard Stream events (`data`, `error`, and `end`), but those are configurable via the `options` parameter. If you are using this with a standard Stream, you likely won't need the `options` parameter.
 
 #### options
 
 ##### await
 
-Type: `Promies`<br>
+Type: `Promise`
 
 If provided, the Observable will not "complete" until `await` is resolved. If `await` is rejected, the Observable will immediately emit an `error` event and disconnect from the stream. This is mostly useful when attaching to the `stdin` or `stdout` streams of a  [`child_process`](https://nodejs.org/api/child_process.html#child_process_child_stdio). Those streams usually do not emit `error` events, even if the underlying process exits with an error. This provides a means to reject the Observable if the child process exits with an unexpected error code.
 
@@ -103,11 +100,11 @@ If you are using an `EventEmitter` or non-standard Stream, you can change which 
 
 ## Learn about Observables
 
- - Overview: https://github.com/zenparsing/es-observable
- - Formal Spec: https://zenparsing.github.io/es-observable/
+ - [Overview](https://github.com/zenparsing/es-observable)
+ - [Formal Spec](https://zenparsing.github.io/es-observable/)
  - [egghead.io lesson](https://egghead.io/lessons/javascript-introducing-the-observable) - Video
- - [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) - Observables Implementation
- - [`zen-observables`](https://github.com/zenparsing/zen-observable) - Observables Implementation
+ - [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) - Observables implementation
+ - [`zen-observables`](https://github.com/zenparsing/zen-observable) - Observables implementation
 
 ## Transform Streams
 
@@ -115,8 +112,8 @@ If you are using an `EventEmitter` or non-standard Stream, you can change which 
 
 ## Caveats
 
-It is important Note that using this module disables back-pressure controls on the stream. As such it should not be used where back-pressure throttling is required (i.e. high volume web servers). It still has value for larger projects, as it can make unit testing streams much cleaner.
+It's important to note that using this module disables back-pressure controls on the stream. As such, it should not be used where back-pressure throttling is required (i.e. high volume web servers). It still has value for larger projects, as it can make unit testing streams much cleaner.
 
 ## License
 
-MIT © [James Talmage](http://github.com/jamestalmage)
+MIT © [James Talmage](https://github.com/jamestalmage)
