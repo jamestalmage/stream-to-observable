@@ -23,9 +23,9 @@
   ],
   "keywords": [
     "stream",
-    "observable"
+    "observable",
+    "convert"
   ],
-  "dependencies": {},
   "devDependencies": {
     "array-to-events": "^1.0.0",
     "ava": "^0.14.0",
