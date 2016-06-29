@@ -40,7 +40,7 @@ function * expectations(...args) {
 
 test(`${prefix}: emits data events`, t => {
 	t.plan(2);
-	var ee = new EventEmitter();
+	const ee = new EventEmitter();
 
 	emitSequence(ee, [
 		['data', 'foo'],
@@ -60,23 +60,23 @@ test(`${prefix}: emits data events`, t => {
 if (isZen) {
 	test(`${prefix}: forEach resolves with the value passed to the "end" event`, async t => {
 		t.plan(1);
-		var ee = new EventEmitter();
+		const ee = new EventEmitter();
 
 		emitSequence(ee, [
 			['data', 'foo'],
 			['end', 'fin']
 		]);
 
-		var result = await m(ee).forEach(() => {});
+		const result = await m(ee).forEach(() => {});
 		t.is(result, 'fin');
 	});
 }
 
 test(`${prefix}: forEach resolves after resolution of the awaited promise${isZen ? ', with promise value' : ''}`, async t => {
 	t.plan(3);
-	var ee = new EventEmitter();
-	var awaited = deferred();
-	var expected = expectations('a', 'b');
+	const ee = new EventEmitter();
+	const awaited = deferred();
+	const expected = expectations('a', 'b');
 
 	emitSequence(ee,
 		[
@@ -89,7 +89,7 @@ test(`${prefix}: forEach resolves after resolution of the awaited promise${isZen
 		}
 	);
 
-	var result =
+	const result =
 		await m(ee, {endEvent: false, await: awaited})
 			.forEach(chunk => t.is(chunk, expected.next().value));
 	await delay(10);
