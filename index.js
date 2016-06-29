@@ -60,16 +60,33 @@ module.exports = function (stream, opts) {
 	});
 
 	return new Observable(function (observer) {
-		if (!complete) {
-			var onData = function onData(data) {
-				observer.next(data);
-			};
-			stream.on(dataEvent, onData);
-			dataListeners.push(onData);
-		}
-
 		completion
 			.then(observer.complete.bind(observer))
 			.catch(observer.error.bind(observer));
+
+		if (complete) {
+			return null;
+		}
+
+		var onData = function onData(data) {
+			observer.next(data);
+		};
+
+		stream.on(dataEvent, onData);
+		dataListeners.push(onData);
+
+		return function () {
+			stream.removeListener(dataEvent, onData);
+
+			if (complete) {
+				return;
+			}
+
+			var idx = dataListeners.indexOf(onData);
+
+			if (idx !== -1) {
+				dataListeners.splice(idx, 1);
+			}
+		};
 	});
 };
