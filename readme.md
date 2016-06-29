@@ -11,10 +11,21 @@
 ```
 $ npm install --save stream-to-observable
 
-# You also need to install an Observable implementation (pick one):
-
-$ npm install --save zen-observable rxjs
 ```
+
+`stream-to-observable` relies on [`any-observable`](https://github.com/sindresorhus/any-observable), which will search for an available Observable implementation. You need to install one yourself:
+
+  ```
+  $ npm install --save zen-observable
+  ```
+
+  or
+
+  ```
+  $ npm install --save rxjs
+  ```
+
+If your code relies on a specific Observable implementation, you should likely specify one using `any-observable`s [registration shortcuts](https://github.com/sindresorhus/any-observable#registration-shortcuts).
 
 ## Usage
 
@@ -22,13 +33,11 @@ $ npm install --save zen-observable rxjs
 const fs = require('fs');
 const split = require('split');
 
-// You provide the Observable implmentation
-const Observable = require('zen-observable')
-const streamToObservable = require('stream-to-observable')(Observable);
+const streamToObservable = require('stream-to-observable');
 
 const readStream = fs
   .createReadStream('./hello-world.txt', {encoding: 'utf8'})
-  .pipe(split()); // chunks a stream into individual lines
+  .pipe(split());
 
 streamToObservable(readStream)
   .filter(chunk => /hello/i.test(chunk))
@@ -38,19 +47,7 @@ streamToObservable(readStream)
   });
 ```
 
-There are convenience imports for [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) and [`zen-observables`](https://github.com/zenparsing/zen-observable):
-
-```js
-const streamToObservable = require('stream-to-observable/zen'); // zen-observables
-// or
-const streamToObservable = require('stream-to-observable/rxjs-all'); // full rxjs implementation
-// or
-const streamToObservable = require('stream-to-observable/rxjs'); // minimal rxjs implementation
-// you can patch the minimal rxjs.
-require('rxjs/add/operator/map');
-```
-
-None of the above implementations are included as dependencies of this package, so you still need to install them yourself using `npm install`. If you're using the minimal `rxjs` import, be sure to see [the documentation](http://reactivex.io/rxjs/manual/installation.html) regarding patching it with additional convenience methods.
+The [`split`](https://github.com/dominictarr/split) module above will chunk the stream into individual lines. This is often very handy for text streams, as each observable event is guaranteed to be a line.
 
 ## API
 

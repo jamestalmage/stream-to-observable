@@ -13,7 +13,8 @@
     "node": ">=0.12.0"
   },
   "scripts": {
-    "test": "xo && nyc --reporter=lcov --reporter=text ava"
+    "test": "xo && nyc --reporter=lcov --reporter=text npm run test_both",
+    "test_both": "ava --require=any-observable/register/rxjs && ava --require=any-observable/register/zen"
   },
   "files": [
     "index.js",
@@ -35,5 +36,8 @@
     "rxjs": "^5.0.0-beta.6",
     "xo": "^0.14.0",
     "zen-observable": "^0.2.1"
+  },
+  "dependencies": {
+    "any-observable": "^0.2.0"
   }
 }
