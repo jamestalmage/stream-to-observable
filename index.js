@@ -69,11 +69,7 @@ module.exports = function (stream, opts) {
 		}
 
 		completion
-			.catch(function (err) {
-				observer.error(err);
-			})
-			.then(function (result) {
-				observer.complete(result);
-			});
+			.then(observer.complete.bind(observer))
+			.catch(observer.error.bind(observer));
 	});
 };
