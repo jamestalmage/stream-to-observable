@@ -34,7 +34,7 @@ function deferred() {
 	return p;
 }
 
-function *expectations(...args) {
+function * expectations(...args) {
 	yield * args;
 }
 
