@@ -222,3 +222,18 @@ test(`${prefix}: listeners are cleaned up on completion, and no further listener
 			return observable.forEach(() => {});
 		});
 });
+
+test(`${prefix}: unsubscribing reduces the listener count`, async t => {
+	const ee = new EventEmitter();
+	t.is(listenerCount(ee, 'data'), 0);
+
+	const observable = m(ee);
+
+	const subscription = observable.subscribe({});
+
+	t.is(listenerCount(ee, 'data'), 1);
+
+	subscription.unsubscribe();
+
+	t.is(listenerCount(ee, 'data'), 0);
+});
