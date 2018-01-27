@@ -98,7 +98,7 @@ If you are using an `EventEmitter` or non-standard Stream, you can change which 
 ## Learn about Observables
 
  - [Overview](https://github.com/zenparsing/es-observable)
- - [Formal Spec](https://zenparsing.github.io/es-observable/)
+ - [Formal Spec](https://github.com/tc39/proposal-observable/)
  - [egghead.io lesson](https://egghead.io/lessons/javascript-introducing-the-observable) - Video
  - [`rxjs` observables](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html) - Observables implementation
  - [`zen-observables`](https://github.com/zenparsing/zen-observable) - Observables implementation
