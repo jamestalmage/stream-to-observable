@@ -27,7 +27,7 @@
     "convert"
   ],
   "dependencies": {
-    "any-observable": "^0.2.0"
+    "any-observable": "^0.3.0"
   },
   "devDependencies": {
     "array-to-events": "^1.0.0",
