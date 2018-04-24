@@ -4,22 +4,13 @@ import ZenObservable from 'zen-observable';
 import test from 'ava';
 import delay from 'delay';
 import arrayToEvents from 'array-to-events';
-import m from './';
+import m from '.';
 
 const isZen = Observable === ZenObservable;
 const prefix = isZen ? 'zen' : 'rxjs';
 
 function emitSequence(emitter, sequence, cb) {
 	arrayToEvents(emitter, sequence, {delay: 'immediate', done: cb});
-}
-
-// avoid deprecation warnings
-// TODO: https://github.com/jden/node-listenercount/pull/1
-function listenerCount(emitter, eventName) {
-	if (emitter.listenerCount) {
-		return emitter.listenerCount(eventName);
-	}
-	return EventEmitter.listenerCount(emitter, eventName);
 }
 
 function deferred() {
@@ -38,7 +29,7 @@ function * expectations(...args) {
 	yield * args;
 }
 
-test(`${prefix}: emits data events`, t => {
+test(`${prefix}: emits data events`, async t => {
 	t.plan(2);
 	const ee = new EventEmitter();
 
@@ -51,28 +42,11 @@ test(`${prefix}: emits data events`, t => {
 
 	const expected = expectations('foo', 'bar');
 
-	return m(ee)
-		.forEach(chunk => t.is(chunk, expected.next().value))
-		.then(delay(10));
+	await m(ee).forEach(chunk => t.is(chunk, expected.next().value));
+	await delay(10);
 });
 
-// RxJs and Zen-Observable do not honor the same contract - RxJs resolves to null.
-if (isZen) {
-	test(`${prefix}: forEach resolves with the value passed to the "end" event`, async t => {
-		t.plan(1);
-		const ee = new EventEmitter();
-
-		emitSequence(ee, [
-			['data', 'foo'],
-			['end', 'fin']
-		]);
-
-		const result = await m(ee).forEach(() => {});
-		t.is(result, 'fin');
-	});
-}
-
-test(`${prefix}: forEach resolves after resolution of the awaited promise${isZen ? ', with promise value' : ''}`, async t => {
+test(`${prefix}: forEach resolves after resolution of the awaited promise`, async t => {
 	t.plan(3);
 	const ee = new EventEmitter();
 	const awaited = deferred();
@@ -89,14 +63,12 @@ test(`${prefix}: forEach resolves after resolution of the awaited promise${isZen
 		}
 	);
 
-	const result =
-		await m(ee, {endEvent: false, await: awaited})
-			.forEach(chunk => t.is(chunk, expected.next().value));
+	const result = await m(ee, {endEvent: false, await: awaited}).forEach(chunk => t.is(chunk, expected.next().value));
 	await delay(10);
-	t.is(result, isZen ? 'resolution' : undefined);
+	t.is(result, undefined);
 });
 
-test(`${prefix}: rejects on error events`, t => {
+test(`${prefix}: rejects on error events`, async t => {
 	t.plan(3);
 
 	const ee = new EventEmitter();
@@ -105,19 +77,20 @@ test(`${prefix}: rejects on error events`, t => {
 		['data', 'foo'],
 		['data', 'bar'],
 		['error', new Error('bar')],
-		['data', 'baz'], // should be ignored
+		['data', 'baz'], // Should be ignored
 		['alternate-error', new Error('baz')]
 	]);
 
 	const expected = expectations('foo', 'bar');
 
-	return t.throws(
+	await t.throws(
 		m(ee).forEach(chunk => t.is(chunk, expected.next().value)),
 		'bar'
-	).then(delay(10));
+	);
+	await delay(10);
 });
 
-test(`${prefix}: change the name of the error event`, t => {
+test(`${prefix}: change the name of the error event`, async t => {
 	t.plan(4);
 
 	const ee = new EventEmitter();
@@ -137,14 +110,14 @@ test(`${prefix}: change the name of the error event`, t => {
 
 	const expected = expectations('foo', 'bar', 'baz');
 
-	return t.throws(
+	await t.throws(
 		m(ee, {errorEvent: 'alternate-error'})
 			.forEach(chunk => t.is(chunk, expected.next().value)),
 		'baz'
 	);
 });
 
-test(`${prefix}: endEvent:false, and await:undefined means the Observable will never be resolved`, t => {
+test(`${prefix}: endEvent:false, and await:undefined means the Observable will never be resolved`, async t => {
 	const ee = new EventEmitter();
 
 	emitSequence(ee, [
@@ -162,10 +135,11 @@ test(`${prefix}: endEvent:false, and await:undefined means the Observable will n
 			completed = true;
 		});
 
-	return delay(30).then(() => t.false(completed));
+	await delay(30);
+	t.false(completed);
 });
 
-test(`${prefix}: errorEvent can be disabled`, () => {
+test(`${prefix}: errorEvent can be disabled`, async t => {
 	const ee = new EventEmitter();
 
 	emitSequence(ee, [
@@ -178,7 +152,7 @@ test(`${prefix}: errorEvent can be disabled`, () => {
 
 	ee.on('error', () => {});
 
-	return m(ee, {errorEvent: false});
+	await t.notThrows(m(ee, {errorEvent: false}));
 });
 
 test(`${prefix}: protects against improper arguments`, t => {
@@ -187,19 +161,19 @@ test(`${prefix}: protects against improper arguments`, t => {
 	t.throws(() => m(new EventEmitter(), {dataEvent: false}), /dataEvent/);
 });
 
-test(`${prefix}: listeners are cleaned up on completion, and no further listeners will be added.`, t => {
+test(`${prefix}: listeners are cleaned up on completion, and no further listeners will be added.`, async t => {
 	t.plan(5);
 
 	const ee = new EventEmitter();
-	t.is(listenerCount(ee, 'data'), 0);
+	t.is(ee.listenerCount('data'), 0);
 
 	const observable = m(ee);
 
 	observable.forEach(() => {});
-	t.is(listenerCount(ee, 'data'), 1);
+	t.is(ee.listenerCount('data'), 1);
 
 	observable.forEach(() => {});
-	t.is(listenerCount(ee, 'data'), 2);
+	t.is(ee.listenerCount('data'), 2);
 
 	emitSequence(ee, [
 		['data', 'foo'],
@@ -207,33 +181,34 @@ test(`${prefix}: listeners are cleaned up on completion, and no further listener
 		['end']
 	]);
 
-	return observable
-		.forEach(() => {})
-		.then(() => {
-			t.is(listenerCount(ee, 'data'), 0);
+	await observable.forEach(() => {});
 
-			ee.on = ee.once = function () {
-				t.fail('should not have added more listeners');
-			};
+	t.is(ee.listenerCount('data'), 0);
 
-			observable.forEach(() => {});
-			t.is(listenerCount(ee, 'data'), 0);
+	const onEvent = () => {
+		t.fail('should not have added more listeners');
+	};
 
-			return observable.forEach(() => {});
-		});
+	ee.on = onEvent;
+	ee.once = onEvent;
+
+	observable.forEach(() => {});
+	t.is(ee.listenerCount('data'), 0);
+
+	await observable.forEach(() => {});
 });
 
-test(`${prefix}: unsubscribing reduces the listener count`, async t => {
+test(`${prefix}: unsubscribing reduces the listener count`, t => {
 	const ee = new EventEmitter();
-	t.is(listenerCount(ee, 'data'), 0);
+	t.is(ee.listenerCount('data'), 0);
 
 	const observable = m(ee);
 
 	const subscription = observable.subscribe({});
 
-	t.is(listenerCount(ee, 'data'), 1);
+	t.is(ee.listenerCount('data'), 1);
 
 	subscription.unsubscribe();
 
-	t.is(listenerCount(ee, 'data'), 0);
+	t.is(ee.listenerCount('data'), 0);
 });
