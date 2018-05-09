@@ -1,4 +1,4 @@
-# stream-to-observable [![Build Status](https://travis-ci.org/jamestalmage/stream-to-observable.svg?branch=master)](https://travis-ci.org/jamestalmage/stream-to-observable) [![Coverage Status](https://coveralls.io/repos/github/jamestalmage/stream-to-observable/badge.svg?branch=master)](https://coveralls.io/github/jamestalmage/stream-to-observable?branch=master)
+# stream-to-observable [![Build Status](https://travis-ci.org/SamVerschueren/stream-to-observable.svg?branch=master)](https://travis-ci.org/SamVerschueren/stream-to-observable) [![Coverage Status](https://coveralls.io/repos/github/SamVerschueren/stream-to-observable/badge.svg?branch=master)](https://coveralls.io/github/SamVerschueren/stream-to-observable?branch=master)
 
 > Convert Node Streams into ECMAScript-Observables
 
@@ -6,11 +6,12 @@
 
 [Learn more about Observables](#learn-about-observables)
 
+**Note:** This module was forked from [`stream-to-observable`](https://github.com/jamestalmage/stream-to-observable) and released under a different name due to inactivity.
+
 ## Install
 
 ```
-$ npm install --save stream-to-observable
-
+$ npm install --save @samverschueren/stream-to-observable
 ```
 
 `stream-to-observable` relies on [`any-observable`](https://github.com/sindresorhus/any-observable), which will search for an available Observable implementation. You need to install one yourself:
@@ -33,7 +34,7 @@ If your code relies on a specific Observable implementation, you should likely s
 const fs = require('fs');
 const split = require('split');
 
-const streamToObservable = require('stream-to-observable');
+const streamToObservable = require('@samverschueren/stream-to-observable');
 
 const readStream = fs
   .createReadStream('./hello-world.txt', {encoding: 'utf8'})
@@ -113,4 +114,4 @@ It's important to note that using this module disables back-pressure controls on
 
 ## License
 
-MIT © [James Talmage](https://github.com/jamestalmage)
+MIT

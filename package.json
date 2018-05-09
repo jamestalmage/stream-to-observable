@@ -1,14 +1,16 @@
 {
-  "name": "stream-to-observable",
+  "name": "@samverschueren/stream-to-observable",
   "version": "0.2.0",
   "description": "Convert Node Streams into ECMAScript-Observables",
   "license": "MIT",
-  "repository": "jamestalmage/stream-to-observable",
-  "author": {
-    "name": "James Talmage",
-    "email": "james@talmage.io",
-    "url": "github.com/jamestalmage"
-  },
+  "repository": "SamVerschueren/stream-to-observable",
+  "maintainers": [
+    {
+      "name": "Sam Verschueren",
+      "email": "sam.verschueren@gmail.com",
+      "url": "github.com/SamVerschueren"
+    }
+  ],
   "engines": {
     "node": ">=6"
   },
