@@ -30,26 +30,18 @@ module.exports = (stream, opts) => {
 	}
 
 	const completion = new Promise((resolve, reject) => {
-		function onEnd(result) {
-			if (awaited) {
-				awaited.then(resolve);
+		if (awaited) {
+			if (endEvent) {
+				awaited.catch(reject);
 			} else {
-				resolve(result);
+				awaited.then(resolve, reject);
 			}
-		}
-
-		if (endEvent) {
-			stream.once(endEvent, onEnd);
-		} else if (awaited) {
-			onEnd();
+		} else if (endEvent) {
+			stream.once(endEvent, resolve);
 		}
 
 		if (errorEvent) {
 			stream.once(errorEvent, reject);
-		}
-
-		if (awaited) {
-			awaited.catch(reject);
 		}
 	}).catch(err => {
 		cleanup();
