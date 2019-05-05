@@ -68,6 +68,18 @@ test(`${prefix}: forEach resolves after resolution of the awaited promise`, asyn
 	t.is(result, undefined);
 });
 
+test(`${prefix}: handles the rejected promise correctly`, async t => {
+	t.plan(1);
+	const ee = new EventEmitter();
+	const awaited = Promise.reject(new Error('rejection'));
+
+	await t.throws(
+		m(ee, {endEvent: false, await: awaited}),
+		'rejection'
+	);
+	// And should not emit an unhandledRejection event
+});
+
 test(`${prefix}: rejects on error events`, async t => {
 	t.plan(3);
 
